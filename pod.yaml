@@ -88,7 +88,7 @@ spec:
     - mountPath: /etc/imapd.conf
       name: imapd_conf
     - mountPath: /run/cyrus
-      name: cyrus_lib
+      name: cyrus_run
     - mountPath: /var/lib/cyrus
       name: cyrus_lib
     - mountPath: /var/spool/sieve
@@ -161,6 +161,10 @@ spec:
       path: /containers/cyrus/lib
       type: Directory
     name: cyrus_lib
+  - hostPath:
+      path: /containers/cyrus/run
+      type: Directory
+    name: cyrus_run
   - hostPath:
       path: /containers/cyrus/sieve
       type: Directory
