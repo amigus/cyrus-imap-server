@@ -1,6 +1,7 @@
 #!/bin/bash
 
 c=${1:-$(buildah from base)}
+b=${2:-$(buildah from cyrus-build)}
 
 buildah run $c zypper in -ly \
 cyrus-sasl-ldap-auxprop \
@@ -16,7 +17,7 @@ sqlite3 \
 tar \
 uchardet
 buildah run $c zypper clean -a
-buildah run $(buildah from cyrus-build) tar -C /target -cf - . |
+buildah run $b tar -C /target -cf - . |
 buildah run $c tar xpf - -C /
 buildah run $c /sbin/ldconfig
 buildah run $c groupadd -g 12 mail
