@@ -136,7 +136,7 @@ spec:
   - hostPath:
       path: /containers/postfix/relay_recipient.lmdb
       type: File
-    name: relayrecipient_lmdb
+    name: relay_recipient_lmdb
   - hostPath:
       path: /containers/postfix/recipient_canonical.lmdb
       type: File
