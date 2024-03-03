@@ -16,19 +16,17 @@ The `./configure` invocation is in [cyrus-build.sh](blob/main/cyrus-build.sh).
 ```bash
 ./configure \
 --prefix=/usr \
---bindir=/usr/cyrus/bin \
---libexecdir=/usr/cyrus/libexec \
+--libexecdir=/usr/lib/cyrus-imapd \
 --enable-autocreate \
 --enable-idled \
 --with-ldap \
+--with-sqlite \
 --without-snmp
 ```
-
-It _excludes_ GSSAPI (Kerberos) and JMAP, CalDAV, CardDAV, etc.
-
-[cyrus.sh](cyrus.sh) copies the built output from  `cyrus-build`.
-[base.sh](base.sh), [ldap.sh](ldap.sh) and
-[postfix.sh](postfix.sh) have no dependencies.
+Everything depends on [base.sh](base.sh).
+[ldap.sh](ldap.sh) and [postfix.sh](postfix.sh) have no other dependencies.
+[cyrus-build.sh](cyrus-build.sh) depends on [base-build.sh](base-build.sh).
+[cyrus.sh](cyrus.sh) copies the cyrus-imapd installation from  `cyrus-build`.
 
 The configuration is _not_ present, however,
 the configuration files and directories are itemized in the YAML. 😉
@@ -37,6 +35,7 @@ the configuration files and directories are itemized in the YAML. 😉
 
 ```bash
 sh base.sh
+sh base-build.sh
 sh cyrus-build.sh
 sh cyrus.sh
 sh ldap.sh
@@ -71,7 +70,7 @@ postfix     76          1           0.000       16m56.035001403s  ?           0s
 postfix     77          1           0.000       16m56.035087065s  ?           0s          qmgr -l -t unix -u
 postfix     80          1           0.000       15m2.035153747s   ?           0s          tlsmgr -l -t unix -u
 ldap        1           0           0.000       16m57.038722838s  ?           0s          /usr/sbin/slapd -d 8 -h ldap:/// ldaps:/// -g ldap -u ldap
-cyrus       1           0           0.000       16m57.040285888s  ?           0s          /usr/cyrus/libexec/master -D
+cyrus       1           0           0.000       16m57.040285888s  ?           0s          /usr/lib/cyrus-imapd/master -D
 cyrus       8           1           0.000       16m57.040405861s  ?           0s          imapd
 cyrus       9           1           0.000       16m57.040455312s  ?           0s          imapd -s
 cyrus       10          1           0.000       16m57.040500084s  ?           0s          idled
