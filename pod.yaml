@@ -130,6 +130,14 @@ spec:
       type: File
     name: smtpd_conf
   - hostPath:
+      path: /containers/postfix/relay.lmdb
+      type: File
+    name: relay_lmdb
+  - hostPath:
+      path: /containers/postfix/relay_recipient.lmdb
+      type: File
+    name: relayrecipient_lmdb
+  - hostPath:
       path: /containers/postfix/recipient_canonical.lmdb
       type: File
     name: recipient_canonical_lmdb
