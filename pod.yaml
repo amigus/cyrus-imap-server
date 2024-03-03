@@ -45,11 +45,6 @@ spec:
       name: smtpd_conf
   - image: localhost/ldap:latest
     name: openldap
-    ports:
-    - containerPort: 389
-      hostPort: 389
-    - containerPort: 636
-      hostPort: 636
     volumeMounts:
     - mountPath: /dev/log
       name: dev_log
