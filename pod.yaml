@@ -21,7 +21,7 @@ spec:
       name: dev_log
     - mountPath: /run/postfix/socket
       name: sockets
-    - mountPath: /etc/ca.pem
+    - mountPath: /etc/postfix/ca.pem
       name: ca_crt
     - mountPath: /etc/postfix/cert.pem
       name: cert
@@ -31,6 +31,10 @@ spec:
       name: main_cf
     - mountPath: /etc/postfix/master.cf
       name: master_cf
+    - mountPath: /etc/postfix/relay.lmdb
+      name: relay_lmdb
+    - mountPath: /etc/postfix/relay_recipient.lmdb
+      name: relay_recipient_lmdb
     - mountPath: /etc/postfix/recipient_canonical.lmdb
       name: recipient_canonical_lmdb
     - mountPath: /etc/postfix/sender_relay.lmdb
@@ -51,7 +55,7 @@ spec:
       name: dev_log
     - mountPath: /run/slapd/socket
       name: sockets
-    - mountPath: /etc/ca.pem
+    - mountPath: /etc/openldap/ca.pem
       name: ca_crt
     - mountPath: /etc/openldap/cert.pem
       name: cert
@@ -106,7 +110,7 @@ spec:
       type: Directory
     name: sockets
   - hostPath:
-      path: /etc/ca.crt
+      path: /etc/CA.pem
       type: File
     name: ca_crt
   - hostPath:
@@ -150,11 +154,11 @@ spec:
       type: File
     name: transport_lmdb
   - hostPath:
-      path: /containers/openldap/slapd.conf
+      path: /containers/ldap/slapd.conf
       type: File
     name: slapd_conf
   - hostPath:
-      path: /containers/openldap/lib
+      path: /containers/ldap/lib
       type: Directory
     name: slapd_lib
   - hostPath:
