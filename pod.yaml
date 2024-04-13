@@ -8,175 +8,172 @@ metadata:
 spec:
   containers:
   - image: localhost/postfix:latest
-    name: postfix
+    name: email-postfix
     ports:
+    - containerPort: 143
+      hostPort: 143
     - containerPort: 465
       hostPort: 465
     - containerPort: 587
       hostPort: 587
-    - containerPort: 25
-      hostPort: 2525
-    volumeMounts:
-    - mountPath: /dev/log
-      name: dev_log
-    - mountPath: /run/postfix/socket
-      name: sockets
-    - mountPath: /etc/postfix/ca.pem
-      name: ca_crt
-    - mountPath: /etc/postfix/cert.pem
-      name: cert
-    - mountPath: /etc/postfix/key.pem
-      name: key
-    - mountPath: /etc/postfix/main.cf
-      name: main_cf
-    - mountPath: /etc/postfix/master.cf
-      name: master_cf
-    - mountPath: /etc/postfix/relay.lmdb
-      name: relay_lmdb
-    - mountPath: /etc/postfix/relay_recipient.lmdb
-      name: relay_recipient_lmdb
-    - mountPath: /etc/postfix/recipient_canonical.lmdb
-      name: recipient_canonical_lmdb
-    - mountPath: /etc/postfix/sender_relay.lmdb
-      name: sender_relay_lmdb
-    - mountPath: /etc/postfix/transport.lmdb
-      name: transport_lmdb
-    - mountPath: /etc/sasl2/smtpd.conf
-      name: smtpd_conf
-  - image: localhost/ldap:latest
-    name: openldap
-    volumeMounts:
-    - mountPath: /dev/log
-      name: dev_log
-    - mountPath: /run/slapd/socket
-      name: sockets
-    - mountPath: /etc/openldap/ca.pem
-      name: ca_crt
-    - mountPath: /etc/openldap/cert.pem
-      name: cert
-    - mountPath: /etc/openldap/key.pem
-      name: key
-    - mountPath: /etc/openldap/slapd.conf
-      name: slapd_conf
-    - mountPath: /var/lib/ldap
-      name: slapd_lib
-  - image: localhost/cyrus:latest
-    name: cyrus_imapd
-    ports:
-    - containerPort: 143
-      hostPort: 143
     - containerPort: 993
       hostPort: 993
-    - containerPort: 2003
-      hostPort: 2003
+    - containerPort: 25
+      hostPort: 2525
     - containerPort: 4190
       hostPort: 4190
     volumeMounts:
     - mountPath: /dev/log
-      name: dev_log
+      name: dev-log
+    - mountPath: /run/postfix/socket
+      name: socket
+    - mountPath: /etc/postfix/ca.pem
+      name: CA.pem
+    - mountPath: /etc/postfix/cert.pem
+      name: fullchain.pem
+    - mountPath: /etc/postfix/key.pem
+      name: privkey.pem
+    - mountPath: /etc/postfix/main.cf
+      name: postfix-main.cf
+    - mountPath: /etc/postfix/master.cf
+      name: postfix-master.cf
+    - mountPath: /etc/postfix/relay.lmdb
+      name: postfix-relay.lmdb
+    - mountPath: /etc/postfix/relay_recipient.lmdb
+      name: postfix-relay_recipient.lmdb
+    - mountPath: /etc/postfix/recipient_canonical.lmdb
+      name: postfix-recipient_canonical.lmdb
+    - mountPath: /etc/postfix/sender_relay.lmdb
+      name: postfix-sender_relay.lmdb
+    - mountPath: /etc/postfix/transport.lmdb
+      name: postfix-transport.lmdb
+    - mountPath: /etc/sasl2/smtpd.conf
+      name: postfix-smtpd.conf
+  - image: localhost/ldap:latest
+    name: email-openldap
+    volumeMounts:
+    - mountPath: /dev/log
+      name: dev-log
+    - mountPath: /run/slapd/socket
+      name: socket
+    - mountPath: /etc/openldap/ca.pem
+      name: CA.pem
+    - mountPath: /etc/openldap/cert.pem
+      name: fullchain.pem
+    - mountPath: /etc/openldap/key.pem
+      name: privkey.pem
+    - mountPath: /etc/openldap/slapd.conf
+      name: ldap-slapd.conf
+    - mountPath: /var/lib/ldap
+      name: ldap-lib
+  - image: localhost/cyrus:latest
+    name: email-cyrusimapd
+    volumeMounts:
+    - mountPath: /dev/log
+      name: dev-log
     - mountPath: /run/cyrus/socket
-      name: sockets
+      name: socket
     - mountPath: /etc/ca.pem
-      name: ca_crt
+      name: CA.pem
     - mountPath: /etc/cert.pem
-      name: cert
+      name: fullchain.pem
     - mountPath: /etc/key.pem
-      name: key
+      name: privkey.pem
     - mountPath: /etc/cyrus.conf
-      name: cyrus_conf
+      name: cyrus-cyrus.conf
     - mountPath: /etc/imapd.conf
-      name: imapd_conf
+      name: cyrus-imapd.conf
     - mountPath: /run/cyrus
-      name: cyrus_run
+      name: cyrus-run
     - mountPath: /var/lib/cyrus
-      name: cyrus_lib
+      name: cyrus-lib
     - mountPath: /var/spool/sieve
-      name: cyrus_sieve
+      name: cyrus-sieve
     - mountPath: /var/spool/cyrus/mail
-      name: cyrus_spool
-  restartPolicy: always
+      name: cyrus-spool
+  restartPolicy: Always
   volumes:
   - hostPath:
-      path: /dev/log
-      type: Socket
-    name: dev_log
-  - hostPath:
-      path: /containers/sockets
+      path: /con/socket
       type: Directory
-    name: sockets
+    name: socket
+  - hostPath:
+      path: /dev/log
+      type: File
+    name: dev-log
   - hostPath:
       path: /etc/CA.pem
       type: File
-    name: ca_crt
+    name: CA.pem
   - hostPath:
       path: /etc/fullchain.pem
       type: File
-    name: cert
+    name: fullchain.pem
   - hostPath:
       path: /etc/privkey.pem
       type: File
-    name: key
+    name: privkey.pem
   - hostPath:
-      path: /containers/postfix/main.cf
+      path: /con/ldap/slapd.conf
       type: File
-    name: main_cf
+    name: ldap-slapd.conf
   - hostPath:
-      path: /containers/postfix/master.cf
-      type: File
-    name: master_cf
-  - hostPath:
-      path: /containers/postfix/smtpd.conf
-      type: File
-    name: smtpd_conf
-  - hostPath:
-      path: /containers/postfix/relay.lmdb
-      type: File
-    name: relay_lmdb
-  - hostPath:
-      path: /containers/postfix/relay_recipient.lmdb
-      type: File
-    name: relay_recipient_lmdb
-  - hostPath:
-      path: /containers/postfix/recipient_canonical.lmdb
-      type: File
-    name: recipient_canonical_lmdb
-  - hostPath:
-      path: /containers/postfix/sender_relay.lmdb
-      type: File
-    name: sender_relay_lmdb
-  - hostPath:
-      path: /containers/postfix/transport.lmdb
-      type: File
-    name: transport_lmdb
-  - hostPath:
-      path: /containers/ldap/slapd.conf
-      type: File
-    name: slapd_conf
-  - hostPath:
-      path: /containers/ldap/lib
+      path: /con/ldap/lib
       type: Directory
-    name: slapd_lib
+    name: ldap-lib
   - hostPath:
-      path: /containers/cyrus/cyrus.conf
+      path: /con/postfix/relay_recipient.lmdb
       type: File
-    name: cyrus_conf
+    name: postfix-relay_recipient.lmdb
   - hostPath:
-      path: /containers/cyrus/imapd.conf
+      path: /con/postfix/sender_relay.lmdb
       type: File
-    name: imapd_conf
+    name: postfix-sender_relay.lmdb
   - hostPath:
-      path: /containers/cyrus/lib
-      type: Directory
-    name: cyrus_lib
+      path: /con/postfix/main.cf
+      type: File
+    name: postfix-main.cf
   - hostPath:
-      path: /containers/cyrus/run
-      type: Directory
-    name: cyrus_run
+      path: /con/postfix/recipient_canonical.lmdb
+      type: File
+    name: postfix-recipient_canonical.lmdb
   - hostPath:
-      path: /containers/cyrus/sieve
-      type: Directory
-    name: cyrus_sieve
+      path: /con/postfix/transport.lmdb
+      type: File
+    name: postfix-transport.lmdb
   - hostPath:
-      path: /containers/cyrus/spool
+      path: /con/postfix/smtpd.conf
+      type: File
+    name: postfix-smtpd.conf
+  - hostPath:
+      path: /con/postfix/master.cf
+      type: File
+    name: postfix-master.cf
+  - hostPath:
+      path: /con/postfix/relay.lmdb
+      type: File
+    name: postfix-relay.lmdb
+  - hostPath:
+      path: /con/cyrus/lib
       type: Directory
-    name: cyrus_spool
+    name: cyrus-lib
+  - hostPath:
+      path: /con/cyrus/run
+      type: Directory
+    name: cyrus-run
+  - hostPath:
+      path: /con/cyrus/cyrus.conf
+      type: File
+    name: cyrus-cyrus.conf
+  - hostPath:
+      path: /con/cyrus/imapd.conf
+      type: File
+    name: cyrus-imapd.conf
+  - hostPath:
+      path: /con/cyrus/sieve
+      type: Directory
+    name: cyrus-sieve
+  - hostPath:
+      path: /con/cyrus/spool
+      type: Directory
+    name: cyrus-spool
