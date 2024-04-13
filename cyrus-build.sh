@@ -1,6 +1,9 @@
 #!/bin/bash
 
 c=${1:-$(buildah from base-build)}
+version=${2:-"3.2.12"}
+
+dist="https://github.com/cyrusimap/cyrus-imapd/releases/download/cyrus-imapd-$version/cyrus-imapd-$version.tar.gz"
 
 buildah run $c zypper in -ly \
 cyrus-sasl-devel \
@@ -13,10 +16,10 @@ perl-Authen-SASL-Cyrus \
 openldap2-devel \
 sqlite3-devel
 buildah run $c zypper clean -a
-curl -Lo - https://github.com/cyrusimap/cyrus-imapd/releases/download/cyrus-imapd-3.2.11/cyrus-imapd-3.2.11.tar.gz |
-buildah run $c tar -zxf - -C /usr/src
+curl -sLo - $dist |
+buildah run --workingdir /usr/src $c tar -zxf -
 buildah run $c install -d -m 755 -o root -g root /target
-buildah run $c sh -c 'cd /usr/src/cyrus-imapd-3.2.11 && \
+buildah run --workingdir /usr/src/cyrus-imapd-$version $c sh <<EOF
 ./configure \
 --prefix=/usr \
 --libexecdir=/usr/lib/cyrus-imapd \
@@ -27,7 +30,8 @@ buildah run $c sh -c 'cd /usr/src/cyrus-imapd-3.2.11 && \
 --without-snmp && \
 DESTDIR=/target make install && \
 for dir in perl/annotator perl/imap perl/sieve/managesieve;
-do ( cd $dir ; make DESTDIR=/target install ); done && \
-cd tools && install masssievec mkimap translatesieve /target/usr/bin/'
+do ( cd \$dir ; make DESTDIR=/target install ); done && \
+cd tools && install masssievec mkimap translatesieve /target/usr/bin/
+EOF
 
 buildah commit $c $(basename -s .sh $0)
