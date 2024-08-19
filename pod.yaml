@@ -1,4 +1,7 @@
----
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-4.8.3
 apiVersion: v1
 kind: Pod
 metadata:
@@ -26,13 +29,15 @@ spec:
     - mountPath: /dev/log
       name: dev-log
     - mountPath: /run/postfix/socket
-      name: socket
+      name: sockets
     - mountPath: /etc/postfix/ca.pem
-      name: CA.pem
+      name: etc-CA.pem
+    - mountPath: /etc/postfix/aliases.lmdb
+      name: postfix-aliases.lmdb
     - mountPath: /etc/postfix/cert.pem
-      name: fullchain.pem
+      name: etc-fullchain.pem
     - mountPath: /etc/postfix/key.pem
-      name: privkey.pem
+      name: etc-privkey.pem
     - mountPath: /etc/postfix/main.cf
       name: postfix-main.cf
     - mountPath: /etc/postfix/master.cf
@@ -55,13 +60,13 @@ spec:
     - mountPath: /dev/log
       name: dev-log
     - mountPath: /run/slapd/socket
-      name: socket
+      name: sockets
     - mountPath: /etc/openldap/ca.pem
-      name: CA.pem
+      name: etc-CA.pem
     - mountPath: /etc/openldap/cert.pem
-      name: fullchain.pem
+      name: etc-fullchain.pem
     - mountPath: /etc/openldap/key.pem
-      name: privkey.pem
+      name: etc-privkey.pem
     - mountPath: /etc/openldap/slapd.conf
       name: ldap-slapd.conf
     - mountPath: /var/lib/ldap
@@ -72,13 +77,13 @@ spec:
     - mountPath: /dev/log
       name: dev-log
     - mountPath: /run/cyrus/socket
-      name: socket
+      name: sockets
     - mountPath: /etc/ca.pem
-      name: CA.pem
+      name: etc-CA.pem
     - mountPath: /etc/cert.pem
-      name: fullchain.pem
+      name: etc-fullchain.pem
     - mountPath: /etc/key.pem
-      name: privkey.pem
+      name: etc-privkey.pem
     - mountPath: /etc/cyrus.conf
       name: cyrus-cyrus.conf
     - mountPath: /etc/imapd.conf
@@ -91,36 +96,35 @@ spec:
       name: cyrus-sieve
     - mountPath: /var/spool/cyrus/mail
       name: cyrus-spool
+  ipFamilies:
+  - IPv6
+  - IPv4
   restartPolicy: Always
   volumes:
   - hostPath:
+      path: /con/cyrus/imapd.conf
+      type: File
+    name: cyrus-imapd.conf
+  - hostPath:
       path: /con/socket
       type: Directory
-    name: socket
-  - hostPath:
-      path: /dev/log
-      type: File
-    name: dev-log
-  - hostPath:
-      path: /etc/CA.pem
-      type: File
-    name: CA.pem
+    name: sockets
   - hostPath:
       path: /etc/fullchain.pem
       type: File
-    name: fullchain.pem
-  - hostPath:
-      path: /etc/privkey.pem
-      type: File
-    name: privkey.pem
+    name: etc-fullchain.pem
   - hostPath:
       path: /con/ldap/slapd.conf
       type: File
     name: ldap-slapd.conf
   - hostPath:
-      path: /con/ldap/lib
+      path: /con/cyrus/run
       type: Directory
-    name: ldap-lib
+    name: cyrus-run
+  - hostPath:
+      path: /con/postfix/aliases.lmdb
+      type: File
+    name: postfix-aliases.lmdb
   - hostPath:
       path: /con/postfix/relay_recipient.lmdb
       type: File
@@ -129,6 +133,10 @@ spec:
       path: /con/postfix/sender_relay.lmdb
       type: File
     name: postfix-sender_relay.lmdb
+  - hostPath:
+      path: /etc/privkey.pem
+      type: File
+    name: etc-privkey.pem
   - hostPath:
       path: /con/postfix/main.cf
       type: File
@@ -142,33 +150,29 @@ spec:
       type: File
     name: postfix-transport.lmdb
   - hostPath:
-      path: /con/postfix/smtpd.conf
-      type: File
-    name: postfix-smtpd.conf
-  - hostPath:
-      path: /con/postfix/master.cf
-      type: File
-    name: postfix-master.cf
-  - hostPath:
-      path: /con/postfix/relay.lmdb
-      type: File
-    name: postfix-relay.lmdb
-  - hostPath:
       path: /con/cyrus/lib
       type: Directory
     name: cyrus-lib
   - hostPath:
-      path: /con/cyrus/run
+      path: /dev/log
+      type: File
+    name: dev-log
+  - hostPath:
+      path: /etc/CA.pem
+      type: File
+    name: etc-CA.pem
+  - hostPath:
+      path: /con/postfix/smtpd.conf
+      type: File
+    name: postfix-smtpd.conf
+  - hostPath:
+      path: /con/ldap/lib
       type: Directory
-    name: cyrus-run
+    name: ldap-lib
   - hostPath:
       path: /con/cyrus/cyrus.conf
       type: File
     name: cyrus-cyrus.conf
-  - hostPath:
-      path: /con/cyrus/imapd.conf
-      type: File
-    name: cyrus-imapd.conf
   - hostPath:
       path: /con/cyrus/sieve
       type: Directory
@@ -177,3 +181,12 @@ spec:
       path: /con/cyrus/spool
       type: Directory
     name: cyrus-spool
+  - hostPath:
+      path: /con/postfix/master.cf
+      type: File
+    name: postfix-master.cf
+  - hostPath:
+      path: /con/postfix/relay.lmdb
+      type: File
+    name: postfix-relay.lmdb
+
