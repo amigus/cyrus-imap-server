@@ -5,7 +5,7 @@ c=${1:-$(buildah from base)}
 buildah run $c zypper in -ly \
 cyrus-sasl-ldap-auxprop \
 cyrus-sasl-scram \
-openldap2
+openldap2_5
 buildah run $c zypper clean -a 
 echo 'auxprop_plugin: slapd' |
 buildah run $c sh -c 'cat >| /etc/sasl2/slapd.conf'

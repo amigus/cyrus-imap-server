@@ -2,7 +2,10 @@
 
 c=${1:-$(buildah from opensuse/leap)}
 
-buildah run $c zypper dup -ly
+buildah run $c zypper mr -d repo-openh264
+buildah run $c zypper ref
+buildah run $c zypper up -ly --replacefiles --recommends
+buildah run $c grep -Eq '^(lmtp|sieve)' /etc/services ||
 buildah run $c sh -c 'cat >>/etc/services'<<EOF
 pop3               110/tcp      # Post Office Protocol v3
 nntp               119/tcp      # Network News Transport Protocol
